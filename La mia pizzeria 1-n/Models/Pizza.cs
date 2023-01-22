@@ -18,7 +18,10 @@ namespace La_mia_pizzeria_1_n.Models {
             [StringLength(300, ErrorMessage = "Il campo immagine non può contenere più di 300 caratteri")]
             public string Img { get; set; }
 
-            public Pizza() {
+            public int CategoryId { get; set; }
+            public Category? Category { get; set; }
+
+        public Pizza() {
             }
 
             public Pizza(int id, string name, string description, string img) {
