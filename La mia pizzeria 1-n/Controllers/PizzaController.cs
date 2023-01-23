@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using La_mia_pizzeria_1_n.Models;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace La_mia_pizzeria_1_n.Controllers {
     public class PizzaController : Controller {
@@ -23,6 +24,7 @@ namespace La_mia_pizzeria_1_n.Controllers {
 
                 Pizza PizzaTrovata = db.Pizze
                     .Where(SingolaPizzaNelDb => SingolaPizzaNelDb.Id == id)
+                    .Include(pizza => pizza.Category)
                     .FirstOrDefault();
 
                 if (PizzaTrovata != null) {
