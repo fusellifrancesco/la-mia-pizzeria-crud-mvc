@@ -74,31 +74,46 @@ namespace La_mia_pizzeria_1_n.Controllers {
         [HttpGet]
         public IActionResult Update(int id) {
             using (PizzaContext db = new PizzaContext()) {
-                Pizza pizzaToUpdate = db.Pizze.Where(pizza => pizza.Id == id).FirstOrDefault();
+                Pizza postToUpdate = db.Pizze.Where(pizza => pizza.Id == id).FirstOrDefault();
 
-                if (pizzaToUpdate == null) {
-                    return NotFound("Il post non è stato trovato");
+                if (postToUpdate == null) {
+                    return NotFound("La pizza non è stata trovata");
                 }
 
-                return View("Update", pizzaToUpdate);
+                List<Category> categories = db.Categories.ToList<Category>();
+
+                PizzaCategoriesView modelForView = new PizzaCategoriesView();
+                modelForView.Pizza = postToUpdate;
+                modelForView.Categories = categories;
+
+                return View("Update", modelForView);
             }
 
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Update(Pizza pizzaData) {
+        public IActionResult Update(int id, PizzaCategoriesView formData) {
             if (!ModelState.IsValid) {
-                return View("Update", pizzaData);
+
+                using (PizzaContext db = new PizzaContext()) {
+                    List<Category> categories = db.Categories.ToList<Category>();
+
+                    formData.Categories = categories;
+                }
+
+                return View("Update", formData);
             }
 
             using (PizzaContext db = new PizzaContext()) {
-                Pizza pizzaToUpdate = db.Pizze.Where(pizza => pizza.Id == pizzaData.Id).FirstOrDefault();
+                Pizza pizzaToUpdate = db.Pizze.Where(pizza => pizza.Id == id).FirstOrDefault();
 
                 if (pizzaToUpdate != null) {
-                    pizzaToUpdate.Name = pizzaData.Name;
-                    pizzaToUpdate.Description = pizzaData.Description;
-                    pizzaToUpdate.Img = pizzaData.Img;
+
+                    pizzaToUpdate.Name = formData.Pizza.Name;
+                    pizzaToUpdate.Description = formData.Pizza.Description;
+                    pizzaToUpdate.Img = formData.Pizza.Img;
+                    pizzaToUpdate.CategoryId = formData.Pizza.CategoryId;
 
                     db.SaveChanges();
 
