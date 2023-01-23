@@ -1,6 +1,7 @@
 ﻿using La_mia_pizzeria_1_n.Database;
 using Microsoft.AspNetCore.Mvc;
 using La_mia_pizzeria_1_n.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace La_mia_pizzeria_1_n.Controllers {
     public class PizzaController : Controller {
@@ -36,24 +37,35 @@ namespace La_mia_pizzeria_1_n.Controllers {
         [HttpGet]
         public IActionResult Create() {
 
-            return View("Create");
+            using (PizzaContext db = new PizzaContext()) {
+                List<Category> categoriesFromDb = db.Categories.ToList<Category>();
+
+                PizzaCategoriesView modelForView = new PizzaCategoriesView();
+                modelForView.Pizza = new Pizza();
+
+                modelForView.Categories = categoriesFromDb;
+
+                return View("Create", modelForView);
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Pizza PizzaData) {
-
+        public IActionResult Create(PizzaCategoriesView formData) {
             if (!ModelState.IsValid) {
+                using (PizzaContext db = new PizzaContext()) {
+                    List<Category> categories = db.Categories.ToList<Category>();
 
-                return View("Create", PizzaData);
+                    formData.Categories = categories;
+                }
 
+
+                return View("Create", formData);
             }
 
             using (PizzaContext db = new PizzaContext()) {
-
-                db.Pizze.Add(PizzaData);
+                db.Pizze.Add(formData.Pizza);
                 db.SaveChanges();
-
             }
 
             return RedirectToAction("Index");
