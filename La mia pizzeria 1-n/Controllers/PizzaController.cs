@@ -4,8 +4,11 @@ using La_mia_pizzeria_1_n.Models;
 using Microsoft.EntityFrameworkCore;
 using La_mia_pizzeria_1_n.Utils;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace La_mia_pizzeria_1_n.Controllers {
+
+    [Authorize]
     public class PizzaController : Controller {
 
         public IActionResult Index() {
